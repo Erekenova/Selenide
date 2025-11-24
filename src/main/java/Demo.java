@@ -13,7 +13,8 @@ public class Demo extends BaseTest {
     @Test
     public void test1() {
         // Ожидаем появления основного меню
-        SelenideElement menu = $(" div.category-cards div.card.mt-4.top-card");
+        SelenideElement menu = $("#app > div > div > div.home-body > div > div:nth-child(n)");
+
         menu.should(visible);
         $("div.category-cards div.card").should(Condition.exist);
         // Получаем все пункты меню
@@ -87,9 +88,9 @@ public class Demo extends BaseTest {
         switchTo().defaultContent();
 
         // Проверка, что страница содержит текст 'Sample Nested Iframe page'
-        SelenideElement pageText = $x("//h1[contains(text(),'Sample Nested Iframe page')]");
+        SelenideElement pageText = $x("//*[@id=\"framesWrapper\"]/div[1][contains(text(), 'Sample Nested Iframe page')]");
         if (pageText.exists()) {
-            System.out.println("Текст 'Sample Nested Iframe page' найден на странице");
+            System.out.println("Текст 'Sample Nest ed Iframe page' найден на странице");
         } else {
             System.out.println("Текст 'Sample Nested Iframe page' не найден");
         }
@@ -124,17 +125,62 @@ public class Demo extends BaseTest {
         //Когда прогресс бар достигнет 30% нажать "Stop"
         SelenideElement progressValue = $x("//div[@role='progressbar']");
         while (true) {
-            String progressText = progressValue.getText(); // например, "30%"
-            int progressPercent = Integer.parseInt(progressText.replace("%", "").trim());
-            if (progressPercent >= 30) {
-                stopButton.click();
-                System.out.println("Прогресс достиг 30%, нажата кнопка 'Stop'");
-                break;
+            String progressText = progressValue.getText().trim(); // например, "30%"
+            if (progressText.isEmpty()) {
+                sleep(500);
+                continue;
             }
-            sleep(500); // пауза 0.5 сек
+            try {
+                int progressPercent = Integer.parseInt(progressText.replace("%", "").trim());
+                if (progressPercent >= 30) {
+                    stopButton.click();
+                    System.out.println("Прогресс достиг 30%, нажата кнопка 'Stop'");
+                    break;
+                }
+            } catch (NumberFormatException e) {
+                // Если текст не число, пропускаем
+                sleep(500);
+            }
+            sleep(500);
         }
     }
 
-}
+    @Test
+    public void test3() {
+
+        //  Кликнуть по меню "Widgets"
+        $x("//h5[text()='Widgets']").click();
+
+        // На странице Widgets кликнуть по пункту "Select Menu"
+        $x("//span[text()='Select Menu']").click();
+
+        //  В выпадающем списке "Old Style Select Menu" выбрать значение "Red"
+        SelenideElement oldStyleSelect = $x("//select[@id='oldSelectMenu']");
+        oldStyleSelect.selectOption("Red");
+
+        //  Проверить, что в списке выбрано требуемое значение
+        String selectedOption = oldStyleSelect.getSelectedOption().getText();
+        if ("Red".equals(selectedOption)) {
+            System.out.println("Выбрано правильное значение: Red");
+        } else {
+            System.out.println("Некорректное выбранное значение: " + selectedOption);
+        }
+
+        //  В выпадающем списке "Multiselect drop down" выбрать более одного значения
+        SelenideElement multiSelect = $x("//select[@id='cars']");
+        multiSelect.selectOption("Volvo");
+        multiSelect.selectOption("Saab");
+
+        //  Проверить, что в списке выбраны требуемые значения
+        var selectedOptions = multiSelect.getSelectedOptions().texts();
+        if (selectedOptions.contains("Volvo") && selectedOptions.contains("Saab")) {
+            System.out.println("Выбраны правильные значения: " + selectedOptions);
+        } else {
+            System.out.println("Некорректные выбранные значения: " + selectedOptions);
+        }
+    }
+
+    }
+
 
 
