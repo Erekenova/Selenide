@@ -152,7 +152,7 @@ public class Demo extends BaseTest {
         $x("//h5[text()='Widgets']").click();
 
         // На странице Widgets кликнуть по пункту "Select Menu"
-        $x("//span[text()='Select Menu']").click();
+        $x("//span[text()='Select Menu']").scrollTo().click();
 
         //  В выпадающем списке "Old Style Select Menu" выбрать значение "Red"
         SelenideElement oldStyleSelect = $x("//select[@id='oldSelectMenu']");
@@ -166,21 +166,27 @@ public class Demo extends BaseTest {
             System.out.println("Некорректное выбранное значение: " + selectedOption);
         }
 
-        //  В выпадающем списке "Multiselect drop down" выбрать более одного значения
-        SelenideElement multiSelect = $x("//select[@id='cars']");
-        multiSelect.selectOption("Volvo");
-        multiSelect.selectOption("Saab");
+        // Открываем мульти-выбор
+        SelenideElement multiSelect = $("div.css-2b097c-container:nth-child(4) > div:nth-child(1) > div:nth-child(2) > div:nth-child(2) > svg:nth-child(1)");
+        multiSelect.shouldBe(Condition.enabled)
+                .click();
+        ;
+        System.out.println("Кликнули ");
+        // Выбираем несколько значений
 
-        //  Проверить, что в списке выбраны требуемые значения
-        var selectedOptions = multiSelect.getSelectedOptions().texts();
-        if (selectedOptions.contains("Volvo") && selectedOptions.contains("Saab")) {
-            System.out.println("Выбраны правильные значения: " + selectedOptions);
-        } else {
-            System.out.println("Некорректные выбранные значения: " + selectedOptions);
+        String[] valuesToSelect = {"Green", "Blue", "Black"};
+        for (String value : valuesToSelect) {
+            $x("//div[contains(@class, 'css-1n7v3ny-option') and text()='" + value + "']").click();
         }
-    }
+        System.out.println("Выбрали значения Green,Blue,Black ");
+        //  Проверить, что эти значения выбраны корректно
+        for (String value : valuesToSelect) {
+            $x("//div[contains(@class, 'css-12jo7m5') and text()='" + value + "']")
+                    .shouldBe(Condition.visible);
+           }
+        System.out.println("Значения выбраны корректно ");
 
     }
-
+}
 
 
