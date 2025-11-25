@@ -13,12 +13,14 @@ public class Demo extends BaseTest {
     @Test
     public void test1() {
         // Ожидаем появления основного меню
-        SelenideElement menu = $("#app > div > div > div.home-body > div > div:nth-child(n)");
+        SelenideElement menu = $(".category-cards");
 
         menu.should(visible);
-        $("div.category-cards div.card").should(Condition.exist);
+        menu.should(Condition.exist);
         // Получаем все пункты меню
-        int menuItemsCount = menu.$$("*").size();
+        int menuItemsCount = menu.$$(".card-up").size();
+        //ElementsCollection menuItems = $$("div.sidebar-menu li");
+
         // Проверяем, что пунктов меню равно шести
         if (menuItemsCount == 6) {
             System.out.println("Пунктов меню равно шести");
